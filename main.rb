@@ -83,6 +83,10 @@ OptionParser.new do |opts|
     options[:dataset_name] = v
   end
 
+  opts.on("--revert-mask", "Treat black pixels as mask and white as background (inverted from default)") do
+    options[:revert_mask] = true
+  end
+
   opts.on("--insecure", "Disable SSL certificate verification (use for self-signed certs)") do
     options[:insecure] = true
   end
@@ -201,7 +205,7 @@ client = IdahClient.new(
   api_key: options[:api_key],
   insecure: options[:insecure]
 )
-mask_encoder = MaskEncoder.new
+mask_encoder = MaskEncoder.new(revert: options[:revert_mask])
 
 # Authenticate: exchange the API key for a JWT bearer token
 puts "\nAuthenticating..."

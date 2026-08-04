@@ -14,8 +14,9 @@ require "chunky_png"
 class MaskEncoder
   TILE_SIZE = 128
 
-  def initialize(rle_encoder = RleEncoder.new)
+  def initialize(rle_encoder = RleEncoder.new, revert: false)
     @rle_encoder = rle_encoder
+    @revert = revert
   end
 
   # Encode a binary mask PNG.
@@ -116,8 +117,13 @@ class MaskEncoder
         g = ChunkyPNG::Color.g(pixel)
         b = ChunkyPNG::Color.b(pixel)
 
-        # Any non-zero pixel is mask (1), zero is background (0)
-        value = (r > 0 || g > 0 || b > 0) ? 1 : 0
+        if @revert
+          # Reverted mask: black pixels are the mask (1), non-zero is background (0)
+          value = (r == 0 && g == 0 && b == 0) ? 1 : 0
+        else
+          # Normal mask: any non-zero pixel is mask (1), zero is background (0)
+          value = (r > 0 || g > 0 || b > 0) ? 1 : 0
+        end
         tile[py * TILE_SIZE + px] = value
       end
     end

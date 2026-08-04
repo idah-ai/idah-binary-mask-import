@@ -42,6 +42,7 @@ ruby main.rb \
 | `--dataset-dir`   | Yes      | Root directory containing `images/` and `masks/` subdirectories                                             |
 | `--mask-category` | Yes      | Mask category name (e.g. `category_1`). Subdirectory name under `masks/` and the annotation category value. |
 | `--dataset-name`  | No       | Name for the created dataset (default: "Imported Dataset")                                                  |
+| `--revert-mask`   | No       | Treat black pixels as mask and white as background (inverted from default)                                  |
 | `--insecure`      | No       | Disable SSL certificate verification (use for self-signed certs)                                            |
 
 ## Input Directory Structure
