@@ -114,13 +114,15 @@ class IdahClient
 
   # ── Annotation (JSON-RPC) ────────────────────────────────────────────
 
-  def create_annotation(entry_id, dimensions: {}, annotation: {}, metadata: {}, id: nil)
+  def create_annotation(entry_id, shape_type:, shape_args: {}, category:, properties: {}, metadata: {}, id: nil)
     id ||= SecureRandom.uuid
     params = {
       id: id,
       entry_id: entry_id,
-      dimensions: dimensions,
-      annotation: annotation,
+      shape_type: shape_type,
+      shape_args: shape_args,
+      category: category,
+      properties: properties,
       metadata: metadata
     }
     json_rpc("create", params)
