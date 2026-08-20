@@ -97,6 +97,12 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+# Create a slug version of the mask category (spaces → hyphens) for use as
+# the internal identifier in labeling config and annotations.
+# The original (with spaces) is preserved for the display label and the
+# subdirectory lookup under masks/.
+category_slug = options[:mask_category]&.tr(" ", "-")
+
 # Validate required options
 %w[api_key project_id dataset_dir mask_category].each do |key|
   if options[key.to_sym].nil? || options[key.to_sym].empty?
@@ -175,7 +181,7 @@ image_files.each do |img_path|
     image: img_path,
     mask: mask_path,
     name: "#{stem}",
-    category: options[:mask_category]
+    category: category_slug
   }
 end
 
@@ -217,7 +223,7 @@ puts "Authenticated successfully"
 labeling_configuration = {
   "idah-image:mask" => {
     values: [
-      { id: options[:mask_category], label: options[:mask_category], color: "#9C1AB2", text_color: nil }
+      { id: category_slug, label: options[:mask_category], color: "#9C1AB2", text_color: "#9C1AB2" }
     ],
     properties: [],
     order: 1
@@ -300,8 +306,10 @@ pairs.each_with_index do |pair, idx|
 
     # f. Write each tile as a separate annotation_shape row
     puts "  Writing #{tile_shapes.length} tile shape(s)..."
-    tile_shapes.each do |shape|
+    tile_shapes.each_with_index do |shape, idx|
+      print "    [#{idx + 1}/#{tile_shapes.length}] #{shape[:key]}..."
       client.write_shape(annotation_id, shape[:key], shape[:value])
+      puts " done"
     end
     puts "  Tile shapes written"
 
