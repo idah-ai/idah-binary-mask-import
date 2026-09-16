@@ -10,8 +10,9 @@
 #    b. Create entry using the media's resource key
 #    c. Encode mask locally (tile-by-tile RLE → base64)
 #    d. Create annotation with:
-#       - dimensions: { type: "idah-image:mask", points: [] }
-#       - annotation: { category: <from --mask-category> }
+#       - shape_type: "idah-image:mask"
+#       - shape_args: { points: [] }
+#       - category: <from --mask-category>
 #    e. Write each tile as a separate annotation_shape row
 #
 # Directory structure:
@@ -289,16 +290,17 @@ pairs.each_with_index do |pair, idx|
     puts "  Mask encoded: #{tile_shapes.length} tiles"
 
     # d. Build annotation payload
-    dimensions = { type: "idah-image:mask", points: [] }
-    annotation_value = { category: pair[:category] }
+    shape_type = "idah-image:mask"
+    shape_args = { points: [] }
     puts "  Category: #{pair[:category]}"
 
     # e. Create annotation
     puts "  Creating annotation..."
     annotation_response = client.create_annotation(
       entry_id,
-      dimensions: dimensions,
-      annotation: annotation_value
+      shape_type: shape_type,
+      shape_args: shape_args,
+      category: pair[:category]
     )
     annotation_id = annotation_response["id"]
     raise "Failed to create annotation" unless annotation_id
